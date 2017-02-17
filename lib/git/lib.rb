@@ -859,7 +859,7 @@ module Git
 
     def command_lines(cmd, opts = [], chdir = true, redirect = '')
       cmd_op = command(cmd, opts, chdir)
-      op.split("\n")
+      cmd_op.split("\n")
     end
 
     # Takes the current git's system ENV variables and store them.
