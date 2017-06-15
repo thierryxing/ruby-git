@@ -148,7 +148,7 @@ module Git
     end
 
     def revparse(string)
-      return string if string =~ /^[A-Fa-f0-9]{40}$/  # passing in a sha - just no-op it
+      return string if string =~ /^[A-Fa-f0-9]{40}$/ # passing in a sha - just no-op it
       rev = ['head', 'remotes', 'tags'].map do |d|
         File.join(@git_dir, 'refs', d, string)
       end.find do |path|
@@ -179,9 +179,9 @@ module Git
 
     def process_commit_data(data, sha = nil, indent = 4)
       hsh = {
-        'sha'     => sha,
-        'message' => '',
-        'parent'  => []
+          'sha' => sha,
+          'message' => '',
+          'parent' => []
       }
 
       loop do
@@ -196,7 +196,7 @@ module Git
         end
       end
 
-      hsh['message'] = data.collect {|line| line[indent..-1]}.join("\n") + "\n"
+      hsh['message'] = data.collect { |line| line[indent..-1] }.join("\n") + "\n"
 
       return hsh
     end
@@ -209,8 +209,8 @@ module Git
 
     def process_tag_data(data, name, indent=4)
       hsh = {
-        'name'    => name,
-        'message' => ''
+          'name' => name,
+          'message' => ''
       }
 
       loop do
@@ -221,7 +221,7 @@ module Git
         hsh[key] = value.join(' ')
       end
 
-      hsh['message'] = data.collect {|line| line[indent..-1]}.join("\n") + "\n"
+      hsh['message'] = data.collect { |line| line[indent..-1] }.join("\n") + "\n"
 
       return hsh
     end
@@ -408,14 +408,14 @@ module Git
 
     def ls_remote(location=nil)
       location ||= '.'
-      Hash.new{ |h,k| h[k] = {} }.tap do |hsh|
+      Hash.new { |h, k| h[k] = {} }.tap do |hsh|
         command_lines('ls-remote', [location], false).each do |line|
           (sha, info) = line.split("\t")
           (ref, type, name) = info.split('/', 3)
           type ||= 'head'
           type = 'branches' if type == 'heads'
           value = {:ref => ref, :sha => sha}
-          hsh[type].update( name.nil? ? value : { name => value })
+          hsh[type].update(name.nil? ? value : {name => value})
         end
       end
     end
@@ -515,7 +515,7 @@ module Git
     #
     # @param [String,Array] paths files paths to be added to the repository
     # @param [Hash] options
-    def add(paths='.',options={})
+    def add(paths='.', options={})
       arr_opts = []
 
       arr_opts << '--all' if options[:all]
@@ -531,7 +531,7 @@ module Git
     end
 
     def remove(path = '.', opts = {})
-      arr_opts = ['-f']  # overrides the up-to-date check by default
+      arr_opts = ['-f'] # overrides the up-to-date check by default
       arr_opts << ['-r'] if opts[:recursive]
       arr_opts << ['--cached'] if opts[:cached]
       arr_opts << '--'
@@ -638,6 +638,7 @@ module Git
     def checkout(branch, opts = {})
       arr_opts = []
       arr_opts << '-b' if opts[:new_branch] || opts[:b]
+      arr_opts << '--track' if opts[:track] || opts[:t]
       arr_opts << '--force' if opts[:force] || opts[:f]
       arr_opts << branch
 
@@ -706,7 +707,7 @@ module Git
       opts = opts.last.instance_of?(Hash) ? opts.last : {}
 
       if (opts[:a] || opts[:annotate]) && !(opts[:m] || opts[:message])
-        raise  "Can not create an [:a|:annotate] tag without the precense of [:m|:message]."
+        raise "Can not create an [:a|:annotate] tag without the precense of [:m|:message]."
       end
 
       arr_opts = []
@@ -736,7 +737,7 @@ module Git
       opts = {:tags => opts} if [true, false].include?(opts)
 
       arr_opts = []
-      arr_opts << '--force'  if opts[:force] || opts[:f]
+      arr_opts << '--force' if opts[:force] || opts[:f]
       arr_opts << remote
 
       command('push', arr_opts + [branch])
@@ -751,7 +752,7 @@ module Git
       head = File.join(@git_dir, 'refs', 'tags', tag_name)
       return File.read(head).chomp if File.exist?(head)
 
-      command('show-ref',  ['--tags', '-s', tag_name])
+      command('show-ref', ['--tags', '-s', tag_name])
     end
 
     def repack
@@ -838,7 +839,7 @@ module Git
     def current_command_version
       output = command('version', [], false)
       version = output[/\d+\.\d+(\.\d+)+/]
-      version.split('.').collect {|i| i.to_i}
+      version.split('.').collect { |i| i.to_i }
     end
 
     def required_command_version
@@ -846,7 +847,7 @@ module Git
     end
 
     def meets_required_version?
-      (self.current_command_version <=>  self.required_command_version) >= 0
+      (self.current_command_version <=> self.required_command_version) >= 0
     end
 
 
@@ -904,9 +905,9 @@ module Git
       global_opts << "--git-dir=#{@git_dir}" if !@git_dir.nil?
       global_opts << "--work-tree=#{@git_work_dir}" if !@git_work_dir.nil?
 
-      opts = [opts].flatten.map {|s| escape(s) }.join(' ')
+      opts = [opts].flatten.map { |s| escape(s) }.join(' ')
 
-      global_opts = global_opts.flatten.map {|s| escape(s) }.join(' ')
+      global_opts = global_opts.flatten.map { |s| escape(s) }.join(' ')
 
       git_cmd = "#{Git::Base.config.binary_path} #{global_opts} #{cmd} #{opts} #{redirect} 2>&1"
 
@@ -947,12 +948,12 @@ module Git
         mode_src, mode_dest, sha_src, sha_dest, type = info.split
 
         memo[file] = {
-          :mode_index => mode_dest,
-          :mode_repo => mode_src.to_s[1, 7],
-          :path => file,
-          :sha_repo => sha_src,
-          :sha_index => sha_dest,
-          :type => type
+            :mode_index => mode_dest,
+            :mode_repo => mode_src.to_s[1, 7],
+            :path => file,
+            :sha_repo => sha_src,
+            :sha_index => sha_dest,
+            :type => type
         }
 
         memo
@@ -996,7 +997,7 @@ module Git
     end
 
     def escape(s)
-      return "'#{s && s.to_s.gsub('\'','\'"\'"\'')}'" if RUBY_PLATFORM !~ /mingw|mswin/
+      return "'#{s && s.to_s.gsub('\'', '\'"\'"\'')}'" if RUBY_PLATFORM !~ /mingw|mswin/
 
       # Keeping the old escape format for windows users
       escaped = s.to_s.gsub('\'', '\'\\\'\'')
